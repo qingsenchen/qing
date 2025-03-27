@@ -1,32 +1,64 @@
+# 构建目录
+build/
+bin/
+lib/
+
 # Prerequisites
 *.d
 
-# Compiled Object files
+# 编译的目标文件
 *.slo
 *.lo
 *.o
 *.obj
 
-# Precompiled Headers
+# 预编译头文件
 *.gch
 *.pch
 
-# Compiled Dynamic libraries
+# 动态链接库
 *.so
 *.dylib
 *.dll
 
-# Fortran module files
+# Fortran 模块文件
 *.mod
 *.smod
 
-# Compiled Static libraries
+# 静态链接库
 *.lai
 *.la
 *.a
 *.lib
 
-# Executables
+# 可执行文件
 *.exe
 *.out
 *.app
+
+# IDE 配置文件
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# CMake 生成的文件
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+
+# 测试生成的文件
+Testing/
+test_results/
+
+build/
+
+# 日志文件
+*.log
+
+# 临时文件
+*.tmp
+*~
