@@ -17,7 +17,9 @@ qing_graph_t* qing_graph_alloc(void);
 void qing_graph_free(qing_graph_t* graph);
 
 // 添加张量到计算图
-int qing_graph_add(qing_graph_t* graph, qing_tensor_t* node);
+int qing_graph_add_node(qing_graph_t* graph, qing_tensor_t* node);
+
+void qing_graph_forward_add(qing_graph_t *graph, qing_tensor_t *out);
 
 // 前向传播
 int qing_graph_forward(qing_graph_t* graph);

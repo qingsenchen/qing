@@ -28,7 +28,7 @@ void qing_graph_free(qing_graph_t* graph) {
     free(graph);
 }
 
-int qing_graph_add(qing_graph_t* graph, qing_tensor_t* node) {
+int qing_graph_add_node(qing_graph_t* graph, qing_tensor_t* node) {
     if (!graph || !node) return -1;
 
     if (graph->nb_nodes >= graph->capacity) {
@@ -45,6 +45,52 @@ int qing_graph_add(qing_graph_t* graph, qing_tensor_t* node) {
     return graph->nb_nodes++;
 }
 
+void qing_graph_forward_add(qing_graph_t *graph, qing_tensor_t *out) {
+    qing_tensor_t *a = out->inputs[0];
+    qing_tensor_t *b = out->inputs[1];
+    
+    if (!a || !b || a->dtype != b->dtype) {
+        fprintf(stderr, "Add operation requires two tensors with same dtype\n");
+        return;
+    }
+
+    const size_t total = a->size;
+    
+    // 逐元素加法运算
+    switch(a->dtype) {
+        case QING_DTYPE_FLOAT32: {
+            float* a_data = (float*)a->data;
+            float* b_data = (float*)b->data;
+            float* out_data = (float*)out->data;
+            for (size_t i = 0; i < total; i++) {
+                out_data[i] = a_data[i] + b_data[i];
+            }
+            break;
+        }
+        case QING_DTYPE_INT32: {
+            int32_t* a_data = (int32_t*)a->data;
+            int32_t* b_data = (int32_t*)b->data;
+            int32_t* out_data = (int32_t*)out->data;
+            for (size_t i = 0; i < total; i++) {
+                out_data[i] = a_data[i] + b_data[i];
+            }
+            break;
+        }
+        case QING_DTYPE_UINT8: {
+            uint8_t* a_data = (uint8_t*)a->data;
+            uint8_t* b_data = (uint8_t*)b->data;
+            uint8_t* out_data = (uint8_t*)out->data;
+            for (size_t i = 0; i < total; i++) {
+                out_data[i] = a_data[i] + b_data[i];
+            }
+            break;
+        }
+        default:
+            fprintf(stderr, "Unsupported dtype for add operation: %d\n", a->dtype);
+            break;
+    }
+}
+
 int qing_graph_forward(qing_graph_t* graph) {
     if (!graph) return -1;
 
@@ -53,7 +99,7 @@ int qing_graph_forward(qing_graph_t* graph) {
         if (tensor->op != QING_OP_NONE) {
             switch (tensor->op) {
                 case QING_OP_ADD:
-                    // 执行加法操作
+                    qing_graph_forward_add(graph, tensor);  // 添加这行调用
                     break;
                 case QING_OP_MUL:
                     // 执行乘法操作
@@ -69,6 +115,8 @@ int qing_graph_forward(qing_graph_t* graph) {
 
     return 0;
 }
+
+
 
 int qing_graph_backward(qing_graph_t* graph) {
     if (!graph) return -1;

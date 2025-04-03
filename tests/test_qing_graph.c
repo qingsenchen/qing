@@ -26,9 +26,9 @@ void test_graph_add() {
     qing_tensor_t* t3 = qing_tensor_create(shape, 2, QING_DTYPE_FLOAT32);
     
     // 添加到图中
-    assert(qing_graph_add(graph, t1) == 0);
-    assert(qing_graph_add(graph, t2) == 1);
-    assert(qing_graph_add(graph, t3) == 2);
+    assert(qing_graph_add_node(graph, t1) == 0);
+    assert(qing_graph_add_node(graph, t2) == 1);
+    assert(qing_graph_add_node(graph, t3) == 2);
     
     assert(graph->nb_nodes == 3);
     assert(graph->nodes[0] == t1);
@@ -63,9 +63,9 @@ void test_graph_forward() {
     qing_tensor_fill(t2, 2.0f);
     
     // 添加到图中
-    qing_graph_add(graph, t1);
-    qing_graph_add(graph, t2);
-    qing_graph_add(graph, t3);
+    qing_graph_add_node(graph, t1);
+    qing_graph_add_node(graph, t2);
+    qing_graph_add_node(graph, t3);
     
     // 执行前向传播
     assert(qing_graph_forward(graph) == 0);
