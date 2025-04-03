@@ -4,6 +4,16 @@
 #include <stdint.h>
 #include <stddef.h>  // for size_t
 
+#define QING_MAX_INPUTS 4  // 最多支持 4 个输入
+
+// 张量的计算类型
+typedef enum {
+    QING_OP_NONE,  // 普通张量（数据）
+    QING_OP_ADD,   // 加法
+    QING_OP_MUL,   // 乘法
+    QING_OP_RELU   // ReLU
+} qing_op_type_t;
+
 typedef enum {
     QING_DTYPE_FLOAT32 = 0,
     QING_DTYPE_INT32,
@@ -27,6 +37,11 @@ typedef struct qing_tensor {
     int ref_count;       // 引用计数
     int is_view;         // 是否是视图
     qing_dtype_t dtype;  // 数据类型
+
+    // 计算图相关
+    qing_op_type_t op;          // 计算类型
+    struct qing_tensor* inputs[QING_MAX_INPUTS];  // 输入张量
+    int num_inputs;             // 当前输入张量数量
 } qing_tensor_t;
 
 // 创建张量（自动计算 stride）

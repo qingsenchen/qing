@@ -44,9 +44,13 @@ set(TEST_FILES
 # 设置可执行文件
 # add_executable(qing ${SOURCE_FILES})
 
-# 设置测试可执行文件
-add_executable(test_qing_tensor ${TEST_FILES} ${SRC_DIR}/qing_tensor.c ${SRC_DIR}/qing_utils.c)
-target_include_directories(test_qing_tensor PRIVATE ${CMAKE_SOURCE_DIR}/include)
+# 添加测试可执行文件
+add_executable(test_qing_graph ${TEST_DIR}/test_qing_graph.c)
+target_include_directories(test_qing_graph PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(test_qing_graph qing)
+
+# 添加到 CTest
+add_test(NAME test_qing_graph COMMAND test_qing_graph)
 
 # 目标链接库
 # 如果有依赖库，可以在这里链接
