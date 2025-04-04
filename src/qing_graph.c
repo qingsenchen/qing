@@ -116,8 +116,6 @@ int qing_graph_forward(qing_graph_t* graph) {
     return 0;
 }
 
-
-
 int qing_graph_backward(qing_graph_t* graph) {
     if (!graph) return -1;
 
