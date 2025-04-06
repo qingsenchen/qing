@@ -32,6 +32,7 @@ set(SOURCE_FILES
     ${SRC_DIR}/qing_utils.c
     ${SRC_DIR}/qing_graph.c
     ${SRC_DIR}/utils/qing_json.c
+    ${SRC_DIR}/qing_transformers.c
 )
 
 # 添加测试源文件
@@ -43,6 +44,7 @@ set(TEST_FILES
     ${TEST_DIR}/test_qing_utils.c
     ${TEST_DIR}/test_qing_graph.c
     ${TEST_DIR}/test_qing_json.c
+    ${TEST_DIR}/test_qing_transformers.c
 )
 
 # 设置可执行文件
@@ -51,12 +53,14 @@ add_library(qing STATIC ${SOURCE_FILES})
 
 # 添加测试可执行文件
 add_executable(test_qing_graph ${TEST_DIR}/test_qing_graph.c)
-add_executable(test_qing_ops ${TEST_DIR}/test_qing_ops.c)  # 新增测试目标
+add_executable(test_qing_ops ${TEST_DIR}/test_qing_ops.c) 
 add_executable(test_qing_tensor ${TEST_DIR}/test_qing_tensor.c)
 add_executable(test_qing_json ${TEST_DIR}/test_qing_json.c)
+add_executable(test_qing_transformers ${TEST_DIR}/test_qing_transformers.c)
+
 
 # 统一设置包含目录和链接库
-foreach(test_name test_qing_graph test_qing_ops test_qing_tensor test_qing_json)
+foreach(test_name test_qing_graph test_qing_ops test_qing_tensor test_qing_json test_qing_transformers)
     target_include_directories(${test_name} PUBLIC ${CMAKE_SOURCE_DIR}/include)
     target_link_libraries(${test_name} qing)
 endforeach()
@@ -66,9 +70,10 @@ enable_testing()
 
 # 添加到 CTest
 add_test(NAME test_qing_graph COMMAND test_qing_graph)
-add_test(NAME test_qing_ops COMMAND test_qing_ops)  # 新增测试条目
+add_test(NAME test_qing_ops COMMAND test_qing_ops)
 add_test(NAME test_qing_tensor COMMAND test_qing_tensor)
 add_test(NAME test_qing_json COMMAND test_qing_json)
+add_test(NAME test_qing_transformers COMMAND test_qing_transformers)
 
 # 目标链接库
 # 如果有依赖库，可以在这里链接

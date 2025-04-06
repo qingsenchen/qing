@@ -28,6 +28,11 @@ void qing_graph_free(qing_graph_t* graph) {
     free(graph);
 }
 
+void qing_graph_build_dfs(qing_graph_t* graph) {
+    if (!graph) return;
+    graph->nb_nodes = 0;
+}   
+
 int qing_graph_add_node(qing_graph_t* graph, qing_tensor_t* node) {
     if (!graph || !node) return -1;
 
@@ -133,7 +138,7 @@ int qing_graph_step(qing_graph_t* graph, float learning_rate) {
     if (!graph) return -1;
 
     for (int i = 0; i < graph->nb_nodes; i++) {
-        qing_tensor_t* tensor = graph->nodes[i];
+        // qing_tensor_t* tensor = graph->nodes[i];
         // TODO: 实现参数更新逻辑
     }
 

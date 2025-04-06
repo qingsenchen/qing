@@ -119,11 +119,50 @@ void test_print_function() {
     printf("[PASS] test_print_function\n");
 }
 
+
+
+void test_print_from_file(const char* path) {
+    FILE *fp = fopen(path, "r");
+    if (fp == NULL) {
+        printf("Failed to open file: %s\n", path);
+        return;
+    }
+    
+    fseek(fp, 0, SEEK_END);
+    long file_size = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+
+    char *json_str = malloc(file_size + 1);
+    if (json_str == NULL) {
+        printf("Failed to allocate memory for JSON string.\n");
+        fclose(fp);
+        return;
+    }
+
+    // 读取文件内容到json_str
+    size_t read_size = fread(json_str, 1, file_size, fp);
+    json_str[read_size] = '\0';  // 添加字符串结束符
+    fclose(fp);
+    
+    const char* ptr = json_str;
+    qing_json_value_t* json = qing_json_parse(&ptr);
+    
+    assert(json != NULL);
+    printf("/Users/king/gitdir/Qwen-1_8B-Chat/config.json -> Print:\n");
+    qing_json_print(json);  // 调用打印函数
+    printf("\n");
+
+    qing_json_free(json);
+    printf("[PASS] test_print_function\n");
+}
+
 int main() {
     test_object_parse();
     test_nested_structure();
     test_error_handling();
-    test_print_function();  // 新增：调用打印测试
+    test_print_function();  
+    test_print_from_file("/Users/king/gitdir/Qwen-1_8B-Chat/config.json");
+
     printf("\nAll JSON tests passed!\n");
     return 0;
 }

@@ -8,7 +8,6 @@
 
 static qing_json_value_t* json_parse_value(const char** str);
 
-// 修改所有函数命名和类型引用
 static const char* json_skip_whitespace(const char* str) {
     while (*str && isspace((unsigned char)*str)) str++;
     return str;
@@ -176,12 +175,12 @@ static qing_json_value_t* json_parse_object(const char** str) {
                 break;
         }
     }
-    qing_json_free(val);  // 新增：循环意外退出时释放内存
+    qing_json_free(val);
     return NULL;
 }
 
 // 解析 JSON 入口
-static qing_json_value_t* json_parse_value(const char** str) {
+static inline qing_json_value_t* json_parse_value(const char** str) {
     *str = json_skip_whitespace(*str);
     if (**str == 'n') return json_parse_null(str);
     if (**str == 't' || **str == 'f') return json_parse_bool(str);
