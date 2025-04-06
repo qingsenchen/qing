@@ -41,17 +41,52 @@ static qing_json_value_t* json_parse_bool(const char** str) {
     return val;
 }
 
-// 解析 number
-static qing_json_value_t* json_parse_number(const char** str) {
+static inline qing_json_value_t* qing_json_parse_float(const char** str) {
     char* end;
-    double num = strtod(*str, &end);
+    double val = strtod(*str, &end);
     if (*str == end) return NULL;
 
-    qing_json_value_t* val = malloc(sizeof(qing_json_value_t));
-    val->type = QING_JSON_NUMBER;
-    val->number = num;
+    qing_json_value_t* result = malloc(sizeof(qing_json_value_t));
+    result->type = QING_JSON_FLOAT;
+    result->number = val;
     *str = end;
-    return val;
+    return result;
+}
+
+static inline qing_json_value_t* qing_json_parse_int(const char** str) {
+    char* end;
+    long val = strtol(*str, &end, 10);
+    if (*str == end) return NULL;
+
+    qing_json_value_t* result = malloc(sizeof(qing_json_value_t));
+    result->type = QING_JSON_INT;
+    result->integer = (int)val;
+    *str = end;
+    return result;
+}
+
+// 解析 number
+static qing_json_value_t* json_parse_number(const char** str) {
+    // char* end;
+    // double num = strtod(*str, &end);
+    // if (*str == end) return NULL;
+
+    // qing_json_value_t* val = malloc(sizeof(qing_json_value_t));
+    // val->type = QING_JSON_NUMBER;
+    // val->number = num;
+    // *str = end;
+    // return val;
+
+    const char* s = *str;
+
+    // 查找是否是 float 格式（含 '.' 或 e/E）
+    while (*s && (isdigit(*s) || *s == '+' || *s == '-' || *s == '.' || *s == 'e' || *s == 'E')) {
+        if (*s == '.' || *s == 'e' || *s == 'E') {
+            return qing_json_parse_float(str);
+        }
+        s++;
+    }
+    return qing_json_parse_int(str);
 }
 
 // 解析 string
@@ -225,8 +260,11 @@ void qing_json_print(const qing_json_value_t* json) {
         case QING_JSON_BOOL:
             printf(json->boolean ? "true" : "false");
             break;
-        case QING_JSON_NUMBER:
+        case QING_JSON_FLOAT:
             printf("%f", json->number);
+            break;
+        case QING_JSON_INT:
+            printf("%d", json->integer);
             break;
         case QING_JSON_STRING:
             printf("\"%s\"", json->string);

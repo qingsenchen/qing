@@ -8,6 +8,7 @@ void test_object_parse() {
     const char* json_str = "{ \
         \"name\": \"QingLite\", \
         \"version\": 1.2, \
+        \"count\": 10, \
         \"active\": true, \
         \"modules\": [\"core\", \"math\", \"io\"] \
     }";
@@ -18,7 +19,7 @@ void test_object_parse() {
     
     assert(json != NULL);
     assert(json->type == QING_JSON_OBJECT);
-    assert(json->count == 4);
+    assert(json->count == 5);
     
     // 验证字段值
     for (size_t i = 0; i < json->count; i++) {
@@ -29,8 +30,11 @@ void test_object_parse() {
             assert(val->type == QING_JSON_STRING);
             assert(strcmp(val->string, "QingLite") == 0);
         } else if (strcmp(key, "version") == 0) {
-            assert(val->type == QING_JSON_NUMBER);
+            assert(val->type == QING_JSON_FLOAT);
             assert(val->number == 1.2);
+        } else if (strcmp(key, "count") == 0) {
+            assert(val->type == QING_JSON_INT);
+            assert(val->integer == 10);
         } else if (strcmp(key, "active") == 0) {
             assert(val->type == QING_JSON_BOOL);
             assert(val->boolean == 1);

@@ -6,7 +6,8 @@
 typedef enum {
     QING_JSON_NULL, 
     QING_JSON_BOOL, 
-    QING_JSON_NUMBER, 
+    QING_JSON_FLOAT,
+    QING_JSON_INT, 
     QING_JSON_STRING, 
     QING_JSON_ARRAY, 
     QING_JSON_OBJECT
@@ -16,6 +17,7 @@ typedef struct qing_json_value {
     qing_json_type_t type;
     union {
         double number;
+        int integer;
         int boolean;
         char* string;
         struct qing_json_value** array;
