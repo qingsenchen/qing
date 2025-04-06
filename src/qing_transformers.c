@@ -23,7 +23,7 @@ int qing_safetensors_load(const char* path) {
     char* header_buf = (char*)malloc(header_len + 1);
     fread(header_buf, 1, header_len, fp);
     fclose(fp);
-    
+
     header_buf[header_len] = '\0';
 
     const char* json_ptr = header_buf;
@@ -31,7 +31,7 @@ int qing_safetensors_load(const char* path) {
     free(header_buf);
     
     if (header) {
-        qing_json_print(header);
+        qing_json_print_pretty(header);
         qing_json_free(header);
     }
 

@@ -23,7 +23,6 @@ static qing_json_value_t* json_parse_null(const char** str) {
     return NULL;
 }
 
-// 解析 true / false
 static qing_json_value_t* json_parse_bool(const char** str) {
     qing_json_value_t* val = malloc(sizeof(qing_json_value_t));
     if (strncmp(*str, "true", 4) == 0) {
@@ -65,18 +64,7 @@ static inline qing_json_value_t* qing_json_parse_int(const char** str) {
     return result;
 }
 
-// 解析 number
 static qing_json_value_t* json_parse_number(const char** str) {
-    // char* end;
-    // double num = strtod(*str, &end);
-    // if (*str == end) return NULL;
-
-    // qing_json_value_t* val = malloc(sizeof(qing_json_value_t));
-    // val->type = QING_JSON_NUMBER;
-    // val->number = num;
-    // *str = end;
-    // return val;
-
     const char* s = *str;
 
     // 查找是否是 float 格式（含 '.' 或 e/E）
@@ -89,7 +77,6 @@ static qing_json_value_t* json_parse_number(const char** str) {
     return qing_json_parse_int(str);
 }
 
-// 解析 string
 static qing_json_value_t* json_parse_string(const char** str) {
     if (**str != '"') return NULL;
     (*str)++;
@@ -110,7 +97,6 @@ static qing_json_value_t* json_parse_string(const char** str) {
     return val;
 }
 
-// 解析数组
 static qing_json_value_t* json_parse_array(const char** str) {
     if (**str != '[') return NULL;
     (*str)++;
@@ -130,7 +116,7 @@ static qing_json_value_t* json_parse_array(const char** str) {
         val->array = realloc(val->array, (val->count + 1) * sizeof(qing_json_value_t*));
         val->array[val->count] = json_parse_value(str);
         if (!val->array[val->count]) {
-            qing_json_free(val);  // 新增：解析失败时释放整个数组
+            qing_json_free(val); 
             return NULL;
         }
         val->count++;
@@ -151,7 +137,6 @@ static qing_json_value_t* json_parse_array(const char** str) {
     return NULL;
 }
 
-// 解析对象
 static qing_json_value_t* json_parse_object(const char** str) {
     if (**str != '{') return NULL;
     (*str)++;
@@ -171,7 +156,7 @@ static qing_json_value_t* json_parse_object(const char** str) {
     while (**str) {
         qing_json_value_t* key = json_parse_string(str);
         if (!key) {
-            qing_json_free(val);  // 新增：key解析失败释放对象
+            qing_json_free(val);
             return NULL;
         }
 
@@ -214,7 +199,6 @@ static qing_json_value_t* json_parse_object(const char** str) {
     return NULL;
 }
 
-// 解析 JSON 入口
 static inline qing_json_value_t* json_parse_value(const char** str) {
     *str = json_skip_whitespace(*str);
     if (**str == 'n') return json_parse_null(str);
@@ -226,11 +210,42 @@ static inline qing_json_value_t* json_parse_value(const char** str) {
     return NULL;
 }
 
+qing_json_value_t* qing_json_get_value(const qing_json_value_t* json, const char* key) {
+    if (!json || json->type != QING_JSON_OBJECT || !key) return NULL;
+
+    for (size_t i = 0; i < json->count; i++) {
+        if (strcmp(json->object.keys[i], key) == 0) {
+            return json->object.values[i];
+        }
+    }
+    return NULL;
+}
+
+// qing_json_value_t* qing_json_get_nested(const qing_json_value_t* json, ...) {
+//     if (!json) return NULL;
+    
+//     const qing_json_value_t* current = json;
+//     va_list args;
+//     va_start(args, json);
+    
+//     const char* key;
+//     while ((key = va_arg(args, const char*)) != NULL && current) {
+//         if (current->type != QING_JSON_OBJECT) {
+//             va_end(args);
+//             return NULL;
+//         }
+        
+//         current = qing_json_get_value(current, key);
+//     }
+    
+//     va_end(args);
+//     return (qing_json_value_t*)current;
+// }
+
 qing_json_value_t* qing_json_parse(const char** str) {
     return json_parse_value(str);
 }
 
-// 释放 JSON 结构体
 void qing_json_free(qing_json_value_t* json) {
     if (!json) return;
 
@@ -249,13 +264,67 @@ void qing_json_free(qing_json_value_t* json) {
     free(json);
 }
 
+static inline void json_print_indent(int indent_level) {
+    for (int i = 0; i < indent_level; i++) {
+        printf("  "); // 每层缩进2个空格
+    }
+}
+
+static void json_print_pretty(const qing_json_value_t* json, int indent_level) {
+    if (!json) return;
+
+    switch (json->type) {
+        case QING_JSON_NULL:
+            printf("null");
+            break;
+        case QING_JSON_BOOL:
+            printf(json->boolean ? "true" : "false");
+            break;
+        case QING_JSON_FLOAT:
+            printf("%f", json->number);
+            break;
+        case QING_JSON_INT:
+            printf("%d", json->integer);
+            break;
+        case QING_JSON_STRING:
+            printf("\"%s\"", json->string);
+            break;
+        case QING_JSON_ARRAY:
+            printf("[\n");
+            for (size_t i = 0; i < json->count; i++) {
+                json_print_indent(indent_level + 1);
+                json_print_pretty(json->array[i], indent_level + 1);
+                if (i < json->count - 1) printf(",");
+                printf("\n");
+            }
+            json_print_indent(indent_level);
+            printf("]");
+            break;
+        case QING_JSON_OBJECT:
+            printf("{\n");
+            for (size_t i = 0; i < json->count; i++) {
+                json_print_indent(indent_level + 1);
+                printf("\"%s\": ", json->object.keys[i]);
+                json_print_pretty(json->object.values[i], indent_level + 1);
+                if (i < json->count - 1) printf(",");
+                printf("\n");
+            }
+            json_print_indent(indent_level);
+            printf("}");
+            break;
+    }
+}
+
+void qing_json_print_pretty(const qing_json_value_t* json) {
+    json_print_pretty(json, 0);
+    printf("\n");
+}   
 
 void qing_json_print(const qing_json_value_t* json) {
     if (!json) return;
 
     switch (json->type) {
         case QING_JSON_NULL:
-            printf("null");
             break;
         case QING_JSON_BOOL:
             printf(json->boolean ? "true" : "false");
