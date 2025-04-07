@@ -1,8 +1,26 @@
 #include "qing_transformers.h"
 #include "utils/qing_json.h"
+#include "qing_model.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+
+bool qing_safetensors_can_load(const char* path) {
+    return strstr(path, ".safetensors") != NULL;
+}
+
+void* qing_hf_load(const char* path) {
+    return NULL;
+}
+
+qing_model_loader_t safetensors_loader = {
+    .format_name = "safetensors",
+    .can_load = qing_safetensors_can_load,
+    .load = qing_hf_load,
+    .free = NULL
+};
 
 static uint64_t read_u64_le(FILE* fp) {
     uint8_t buf[8];
@@ -13,6 +31,8 @@ static uint64_t read_u64_le(FILE* fp) {
     }
     return len;
 }
+
+
 
 int qing_safetensors_load(const char* path) {
     FILE* fp = fopen(path, "rb");
