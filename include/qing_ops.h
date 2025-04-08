@@ -35,4 +35,28 @@ qing_tensor_t* qing_op_mul_mat(qing_tensor_t* a, qing_tensor_t* b);
 qing_tensor_t* qing_op_mul_mat_id(qing_tensor_t* a, qing_tensor_t* b);
 qing_tensor_t* qing_op_out_prod(qing_tensor_t* a, qing_tensor_t* b);
 
+typedef struct {
+    qing_op_type_t op_type;
+    const char* device_type;   // "cpu", "cuda", "simd"
+    qing_dtype_t dtype;         // "fp32", "fp16", "bf16"
+
+    int priority;              // 越大越优先（静态优先级）
+    float (*score)(
+        const void* params,
+        const char* device_type
+    );                         // 可选：动态性能打分
+
+    int (*is_supported)(
+        const void* params,
+        const char* device_type,
+        qing_dtype_t dtype
+    );                         // 可选：条件支持检测
+
+    void (*compute)(
+        const void** inputs, int num_inputs,
+        void** outputs, int num_outputs,
+        const void* params
+    );
+} qing_kernel_t;
+
 #endif // QING_OPS_H

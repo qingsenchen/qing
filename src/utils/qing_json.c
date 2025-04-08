@@ -82,7 +82,16 @@ static qing_json_value_t* json_parse_string(const char** str) {
     (*str)++;
 
     const char* start = *str;
-    while (**str && **str != '"') (*str)++;
+    while (**str && **str != '"') {
+        if (**str == '\\') {
+            (*str)++;
+            if (**str == '"') {
+                (*str)++;
+                continue;
+            }
+        }
+        (*str)++;
+    }
     if (**str != '"') return NULL;
 
     size_t len = *str - start;

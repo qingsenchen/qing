@@ -226,6 +226,44 @@ void test_get_value_by_key() {
     printf("[PASS] test_get_value_by_key\n");
 }
 
+// 测试通过键获取值的功能
+void test_large_file() {
+    const char* path = "/Users/king/gitdir/Qwen2.5-0.5B-Instruct/vocab.json";
+    FILE *fp = fopen(path, "r");
+    if (fp == NULL) {
+        printf("Failed to open file: %s\n", path);
+        return;
+    }
+    
+    fseek(fp, 0, SEEK_END);
+    long file_size = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+
+    char *json_str = malloc(file_size + 1);
+    if (json_str == NULL) {
+        printf("Failed to allocate memory for JSON string.\n");
+        fclose(fp);
+        return;
+    }
+
+    // 读取文件内容到json_str
+    size_t read_size = fread(json_str, 1, file_size, fp);
+    json_str[read_size] = '\0';  // 添加字符串结束符
+    fclose(fp);
+    
+    const char* ptr = json_str;
+    qing_json_value_t* json = qing_json_parse(&ptr);
+    
+    assert(json != NULL);
+    printf("/Users/king/gitdir/Qwen-1_8B-Chat/config.json -> Print:\n");
+    qing_json_print_pretty(json);  // 调用打印函数
+    printf("\n");
+
+    qing_json_free(json);
+    printf("[PASS] test_large_file\n");
+}
+
+
 int main() {
     test_object_parse();
     test_nested_structure();
@@ -233,6 +271,7 @@ int main() {
     test_print_function();
     test_get_value_by_key(); 
     test_print_from_file("/Users/king/gitdir/Qwen-1_8B-Chat/config.json");
+    test_large_file();
 
     printf("\nAll JSON tests passed!\n");
     return 0;
