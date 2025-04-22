@@ -8,7 +8,7 @@ typedef struct {
     size_t len;     // 当前长度（不包含终止符）
     size_t cap;     // 总容量
     uint32_t hash;
-    uint32_t pading;
+    uint32_t pad;
     char buf[];     // 实际字符内容（变长数组）
 } qing_string_hdr_t;
 
@@ -20,6 +20,7 @@ void qing_string_free(qing_string_t s);
 
 size_t qing_string_len(const qing_string_t s);
 size_t qing_string_cap(const qing_string_t s);
+uint32_t qing_string_hash(const qing_string_t s);
 qing_string_t qing_string_concat(qing_string_t s, const char* t);
 qing_string_t qing_string_concat_len(qing_string_t s, const char* t, size_t len);
 void qing_string_clear(qing_string_t s);

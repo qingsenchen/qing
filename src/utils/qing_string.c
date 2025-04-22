@@ -44,8 +44,11 @@ void qing_string_free(qing_string_t s) {
 }
 
 size_t qing_string_len(const qing_string_t s) {
-    
     return QING_STR_HDR(s)->len;
+}
+
+uint32_t qing_string_hash(const qing_string_t s) {
+    return QING_STR_HDR(s)->hash;
 }
 
 size_t qing_string_cap(const qing_string_t s) {
