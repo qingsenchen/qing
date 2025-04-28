@@ -34,6 +34,7 @@ set(SOURCE_FILES
     ${SRC_DIR}/utils/qing_json.c
     ${SRC_DIR}/utils/qing_string.c
     ${SRC_DIR}/utils/qing_hash.c
+    ${SRC_DIR}/utils/qing_unicode.c
     ${SRC_DIR}/qing_transformers.c
     ${SRC_DIR}/qing_memory.c
 
@@ -51,6 +52,7 @@ set(TEST_FILES
     ${TEST_DIR}/test_qing_string.c
     ${TEST_DIR}/test_qing_transformers.c
     ${TEST_DIR}/test_qing_hash.c
+    ${TEST_DIR}/test_qing_unicode.c
 )
 
 # 设置可执行文件
@@ -65,10 +67,11 @@ add_executable(test_qing_json ${TEST_DIR}/test_qing_json.c)
 add_executable(test_qing_transformers ${TEST_DIR}/test_qing_transformers.c)
 add_executable(test_qing_string ${TEST_DIR}/test_qing_string.c)
 add_executable(test_qing_hash ${TEST_DIR}/test_qing_hash.c)
+add_executable(test_qing_unicode ${TEST_DIR}/test_qing_unicode.c)
 
 
 # 统一设置包含目录和链接库
-foreach(test_name test_qing_graph test_qing_ops test_qing_tensor test_qing_json test_qing_transformers test_qing_string test_qing_hash)
+foreach(test_name test_qing_graph test_qing_ops test_qing_tensor test_qing_json test_qing_transformers test_qing_string test_qing_hash test_qing_unicode)
     target_include_directories(${test_name} PUBLIC ${CMAKE_SOURCE_DIR}/include)
     target_link_libraries(${test_name} qing)
 endforeach()
@@ -84,6 +87,7 @@ add_test(NAME test_qing_json COMMAND test_qing_json)
 add_test(NAME test_qing_transformers COMMAND test_qing_transformers)
 add_test(NAME test_qing_string COMMAND test_qing_string)
 add_test(NAME test_qing_hash COMMAND test_qing_hash)
+add_test(NAME test_qing_unicode COMMAND test_qing_unicode)
 
 # 目标链接库
 # 如果有依赖库，可以在这里链接
