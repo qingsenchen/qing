@@ -5,13 +5,7 @@
 #include <stdbool.h>
 #include "qing_string.h"
 
-typedef enum {
-    QING_TYPE_NULL, 
-    QING_TYPE_BOOL, 
-    QING_TYPE_FLOAT,
-    QING_TYPE_INT, 
-    QING_TYPE_STRING
-} qing_vtype_t;
+
 
 #define QING_IS_BOOL(value)         ((value).type == QING_TYPE_BOOL)
 #define QING_IS_NULL(value)         ((value).type == QING_TYPE_NULL)

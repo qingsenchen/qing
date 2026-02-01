@@ -220,51 +220,51 @@ void print_recursive(void *data, int *shape, int dim, int current_dim, int *inde
         }
         printf("\n");
         for (int j = 0; j < current_dim; j++) {
-            printf(" ");
+            if (tensor->data) {
+                free(tensor->data);
+            }
+            if (tensor->shape) {
+                free(tensor->shape);
+            }
+            free(tensor);
         }
-        printf("]");
     }
 }
 
-// 打印 QingTensor
-void qing_tensor_print(const qing_tensor_t* tensor) {
-    if (!tensor || !tensor->data) {
-        printf("tensor(None)\n");
-        return;
-    }
-
-    int dim = tensor->ndim;
-    int *shape = tensor->shape;
-    int total_size = 1;
-    for (int i = 0; i < dim; i++) {
-        total_size *= shape[i];
-    }
-
-    printf("tensor(");
-    int *index = (int *)calloc(dim, sizeof(int));
-    print_recursive(tensor->data, shape, dim, 0, index, total_size / shape[0], tensor->dtype);
-    free(index);
-    printf(")\n");
+// 获取张量数据指针
+void* qing_tensor_data(qing_tensor_t* tensor) {
+    if (!tensor) return NULL;
+    return tensor->data;
 }
 
-// 张量赋值（可以是标量或者另一个张量）
-void qing_tensor_fill(qing_tensor_t* tensor, float value) {
-    if (tensor && tensor->data) {
-        for (int i = 0; i < tensor->size; i++) {
-            switch (tensor->dtype) {
+// 打印张量数据（递归）
+void print_recursive(void *data, int *shape, int dim, int current_dim, int *index, int stride, qing_dtype_t dtype) {
+    if (current_dim == dim - 1) {
+        printf("[");
+        for (int i = 0; i < shape[current_dim]; i++) {
+            if (i >= PRINT_MAX_SIZE / 2 && i < shape[current_dim] - PRINT_MAX_SIZE / 2) {
+                if (i == PRINT_MAX_SIZE / 2) {
+                    printf(" ...");
+                }
+                continue;
+            }
+            int flat_index = 0;
+            for (int d = 0; d < dim; d++) {
+                flat_index += index[d] * stride;
+            }
+            flat_index += i;
+
+            // 根据数据类型格式化输出
+            switch (dtype) {
                 case QING_DTYPE_FLOAT32:
-                    ((float*)tensor->data)[i] = value;
+                    printf("%8.3f", ((float *)data)[flat_index]);
                     break;
                 case QING_DTYPE_FLOAT16:
-                    ((uint16_t*)tensor->data)[i] = (uint16_t)(value * 32768); // 简单转换为 16-bit float
+                    printf("%8.3f", ((float *)data)[flat_index]);
                     break;
-                case QING_DTYPE_INT8:
-                    ((int8_t*)tensor->data)[i] = (int8_t)value;
+                case QING_DTYPE_INT32:
+                    printf("%6d", ((int *)data)[flat_index]);
                     break;
-                default:
-                    printf("Error: Unsupported dtype for fill operation.\n");
-                    return;
-            }
-        }
-    }
-}
+                case QING_DTYPE_INT16:
+                    printf("%6d", ((short *)data)[flat_index]);
+                    break;

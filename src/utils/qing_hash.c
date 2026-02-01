@@ -1,3 +1,4 @@
+#include "qing.h"
 #include "utils/qing_hash.h"
 #include "utils/qing_string.h"
 #include "qing_memory.h"

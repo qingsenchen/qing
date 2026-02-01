@@ -6,7 +6,6 @@ qing_vocab_t* qing_vocab_load(const char* filename) {
     return NULL;
 }
 
-
 void qing_vocab_add_token(qing_vocab_t* vocab, const char* token, int id) {
     // 创建token的副本，因为原始token可能是临时的
     qing_string_t new_token = qing_string_new(token);

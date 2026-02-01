@@ -23,10 +23,12 @@ uint32_t unicode_cpt_from_utf8(const char *utf8, size_t utf8_size, size_t *offse
         (*offset) += 1;
         return result;
     }
+
     if ((byte0 & 0x40) == 0) {
         fprintf(stderr, "invalid character\n");
         exit(EXIT_FAILURE);
     }
+
     if ((byte0 & 0x20) == 0) {
         if ((*offset) + 1 >= utf8_size) {
             fprintf(stderr, "unexpected end of input\n");
@@ -41,6 +43,7 @@ uint32_t unicode_cpt_from_utf8(const char *utf8, size_t utf8_size, size_t *offse
         (*offset) += 2;
         return result;
     }
+
     if ((byte0 & 0x10) == 0) {
         if ((*offset) + 2 >= utf8_size) {
             fprintf(stderr, "unexpected end of input\n");
@@ -56,6 +59,7 @@ uint32_t unicode_cpt_from_utf8(const char *utf8, size_t utf8_size, size_t *offse
         (*offset) += 3;
         return result;
     }
+
     if ((byte0 & 0x08) == 0) {
         if ((*offset) + 3 >= utf8_size) {
             fprintf(stderr, "unexpected end of input\n");
