@@ -1,6 +1,7 @@
 #include "utils/qing_hash.h"
 #include "utils/qing_string.h"
 #include "qing_memory.h"
+#include "qing.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,9 +45,9 @@ void test_hash_set_get() {
     qing_string_t key3 = qing_string_new("key3");
     
     // Test setting values
-    qing_hash_value_t value1 = INT_VAL(100);
-    qing_hash_value_t value2 = FLOAT_VAL(3.14);
-    qing_hash_value_t value3 = BOOL_VAL(true);
+    qing_value_t value1 = INT_VAL(100);
+    qing_value_t value2 = FLOAT_VAL(3.14);
+    qing_value_t value3 = BOOL_VAL(true);
     
     bool is_new1 = qing_hash_set(&table, key1, value1);
     bool is_new2 = qing_hash_set(&table, key2, value2);
@@ -58,7 +59,7 @@ void test_hash_set_get() {
     TEST_ASSERT(table.count == 3, "Table should have 3 entries");
     
     // Test getting values
-    qing_hash_value_t result1, result2, result3, result4;
+    qing_value_t result1, result2, result3, result4;
     bool found1 = qing_hash_get(&table, key1, &result1);
     bool found2 = qing_hash_get(&table, key2, &result2);
     bool found3 = qing_hash_get(&table, key3, &result3);
@@ -77,7 +78,7 @@ void test_hash_set_get() {
     TEST_ASSERT(!found4, "Non-existent key should not be found");
     
     // Test updating existing key
-    qing_hash_value_t new_value = INT_VAL(200);
+    qing_value_t new_value = INT_VAL(200);
     bool is_new4 = qing_hash_set(&table, key1, new_value);
     TEST_ASSERT(!is_new4, "Updating existing key should not be new");
     
@@ -118,7 +119,7 @@ void test_hash_delete() {
     TEST_ASSERT(table.count == 2, "Count doesn't decrease due to tombstone");
     
     // Try to get deleted key
-    qing_hash_value_t result;
+    qing_value_t result;
     bool found = qing_hash_get(&table, key1, &result);
     TEST_ASSERT(!found, "Deleted key should not be found");
     
@@ -164,7 +165,7 @@ void test_hash_resize() {
     TEST_ASSERT(table.capacity > initial_capacity, "Table should have resized");
     
     // Verify all entries are still accessible
-    qing_hash_value_t result;
+    qing_value_t result;
     for (int i = 0; i < 20; i++) {
         sprintf(key_buffer, "key%d", i);
         printf("table.count: %d\n", table.count);
@@ -214,7 +215,7 @@ void test_hash_copy() {
     TEST_ASSERT(destination.count == 3, "Destination should have 3 entries");
     
     // Verify all entries were copied correctly
-    qing_hash_value_t result;
+    qing_value_t result;
     bool found1 = qing_hash_get(&destination, key1, &result);
     TEST_ASSERT(found1, "Key1 should be found in destination");
     TEST_ASSERT(QING_AS_INT(result) == 100, "Value1 should be correct in destination");

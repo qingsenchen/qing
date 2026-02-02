@@ -58,45 +58,4 @@ int qing_safetensors_load(const char* path) {
     return 0; // TODO: implement
 }
 
-bool qing_safetensors_vocab_load(const char* path) {
-    FILE *fp = fopen(path, "r");
-    if (fp == NULL) {
-        printf("Failed to open file: %s\n", path);
-        return false;
-    }
-    
-    fseek(fp, 0, SEEK_END);
-    long file_size = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-
-    char *json_str = malloc(file_size + 1);
-    if (json_str == NULL) {
-        printf("Failed to allocate memory for JSON string.\n");
-        fclose(fp);
-        return false;
-    }
-
-    // 读取文件内容到json_str
-    size_t read_size = fread(json_str, 1, file_size, fp);
-    json_str[read_size] = '\0';  // 添加字符串结束符
-    fclose(fp);
-    
-    const char* ptr = json_str;
-    qing_json_value_t* json = qing_json_parse(&ptr);
-
-    // // 创建新的词汇表
-    qing_vocab_t* vocab = malloc(sizeof(qing_vocab_t));
-    vocab->token_to_id.count = 0;
-
-    // 遍历JSON对象，将词汇添加到词汇表中
-    for (int i = 0; i < json->count; i++) {
-        const char* token = json->object.keys[i];
-        int id = json->object.values[i]->integer;
-        // 添加到token_to_id映射
-        //qing_vocab_add_token(vocab, token, id);
-    }
-
-
-
-    return vocab;
-}
+bool qing_safetensors_vocab_load(const char* path) { return false;} 

@@ -13,9 +13,8 @@ typedef struct {
 } qing_string_hdr_t;
 
 typedef char* qing_string_t;
-
-qing_string_t qing_string_new(const char* init);
-qing_string_t qing_string_new_len(const char* init, size_t len);
+qing_string_t qing_string_new(const char* cstr);
+qing_string_t qing_string_new_len(const char* cstr, size_t len);
 void qing_string_free(qing_string_t s);
 
 size_t qing_string_len(const qing_string_t s);

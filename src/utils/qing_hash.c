@@ -1,3 +1,4 @@
+#include "qing.h"
 #include "utils/qing_hash.h"
 #include "utils/qing_string.h"
 #include "qing_memory.h"
@@ -53,7 +54,7 @@ static qing_hash_entry_t* hash_find_entry(qing_hash_entry_t* entries, int capaci
     }
 }
 
-bool qing_hash_get(qing_hash_table_t* table, qing_string_t key, qing_hash_value_t* value) {
+bool qing_hash_get(qing_hash_table_t* table, qing_string_t key, qing_value_t* value) {
     if (table->count == 0) return false;
     
     qing_hash_entry_t* entry = hash_find_entry(table->entries, table->capacity, key);
@@ -86,7 +87,7 @@ static void hash_adjust_capacity(qing_hash_table_t* table, int capacity) {
     table->capacity = capacity;
 }
 
-bool qing_hash_set(qing_hash_table_t* table, qing_string_t key, qing_hash_value_t value) {
+bool qing_hash_set(qing_hash_table_t* table, qing_string_t key, qing_value_t value) {
     if (table->count + 1 > table->capacity * HASH_MAX_LOAD) {
         int capacity = QING_GROW_CAPACITY(table->capacity);
         hash_adjust_capacity(table, capacity);
